@@ -2,41 +2,55 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>元気いっぱい！サウンドスロット</title>
     <style>
         :root { --main-yellow: #ffeb3b; --accent-pink: #ff4081; --bg-blue: #00bcd4; }
+        
         body { 
             background: var(--bg-blue); 
             font-family: 'Helvetica Neue', Arial, sans-serif;
             display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; height: 100vh; margin: 0; color: #333;
+            justify-content: center; min-height: 100vh; margin: 0; color: #333;
+            touch-action: manipulation;
         }
-        h1 { color: white; text-shadow: 2px 2px 0 var(--accent-pink); font-size: 2.5rem; }
+
+        h1 { color: white; text-shadow: 2px 2px 0 var(--accent-pink); font-size: 1.8rem; margin-bottom: 10px; }
+
         .slot-machine { 
-            background: var(--main-yellow); padding: 30px; border-radius: 30px;
-            box-shadow: 0 10px 0 #cddc39; border: 8px solid white;
+            background: var(--main-yellow); padding: 20px; border-radius: 20px;
+            box-shadow: 0 8px 0 #cddc39; border: 6px solid white;
+            width: 90%; max-width: 380px; box-sizing: border-box;
         }
-        .reels { display: flex; gap: 15px; margin-bottom: 20px; }
-        .reel-unit { display: flex; flex-direction: column; gap: 10px; }
+
+        .reels { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
+        
+        .reel-unit { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+        
         .reel { 
-            width: 100px; height: 120px; line-height: 120px; font-size: 60px;
-            background: white; border-radius: 15px; border: 4px solid #555;
-            font-weight: bold; text-align: center;
+            height: 90px; line-height: 90px; font-size: 40px;
+            background: white; border-radius: 12px; border: 3px solid #555;
+            text-align: center; overflow: hidden; font-weight: bold;
         }
+
         .stop-btn { 
-            padding: 10px; font-weight: bold; cursor: pointer;
+            height: 50px; font-weight: bold; font-size: 16px;
             background: var(--accent-pink); color: white; border: none;
-            border-radius: 50px; box-shadow: 0 4px 0 #ad1457; transition: 0.1s;
+            border-radius: 10px; box-shadow: 0 4px 0 #ad1457;
+            cursor: pointer;
         }
-        .stop-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #ad1457; }
+        .stop-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #ad1457; }
         .stop-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; cursor: not-allowed; }
+
         #start-btn { 
-            padding: 15px 60px; font-size: 24px; font-weight: bold;
-            background: #4caf50; color: white; border: none; border-radius: 50px;
+            width: 100%; padding: 15px; font-size: 22px; font-weight: bold;
+            background: #4caf50; color: white; border: none; border-radius: 15px;
             box-shadow: 0 6px 0 #2e7d32; cursor: pointer;
         }
-        #start-btn:disabled { opacity: 0.5; }
+        #start-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* 絵柄が揃った時の余韻メッセージ */
+        #message { height: 30px; margin-top: 15px; font-weight: bold; color: white; }
     </style>
 </head>
 <body>
@@ -59,17 +73,17 @@
             </div>
         </div>
         <button id="start-btn" onclick="startSlot()">START!!</button>
+        <div id="message"></div>
     </div>
 
     <script>
         const symbols = ["〇", "△", "□", "●", "▲", "■", "||", "=", "|||", "≡"];
         
-        // --- 音声ファイル設定 ---
-        const audioSpin = new Audio('spin.mp3'); // 回転中の音
+        // 音声定義
+        const audioSpin = new Audio('spin.mp3');
         audioSpin.loop = true;
-        const audioStop = new Audio('stop_btn.mp3'); // ボタン押し音
+        const audioStopSe = new Audio('stop_btn.mp3');
         
-        // 絵柄ごとの音声ファイル（ファイル名を絵柄のindexに合わせて用意してください）
         const symbolAudioPaths = [
             'maru.mp3', 'sankaku.mp3', 'shikaku.mp3', 
             'kuromaru.mp3', 'kurosankaku.mp3', 'kuroshikaku.mp3',
@@ -79,14 +93,15 @@
         let reelIntervals = [null, null, null];
         let reelResults = [null, null, null];
         let stoppedCount = 0;
-        let currentVoice = null; // 現在再生中の単体ボイス
+        let currentVoice = null;
 
         function startSlot() {
             stoppedCount = 0;
             reelResults = [null, null, null];
             document.getElementById("start-btn").disabled = true;
+            document.getElementById("message").innerText = "";
             
-            audioSpin.play();
+            audioSpin.play().catch(() => { console.log("ユーザー操作が必要です"); });
 
             for (let i = 0; i < 3; i++) {
                 document.getElementById(`stop${i}`).disabled = false;
@@ -94,7 +109,7 @@
                     const idx = Math.floor(Math.random() * symbols.length);
                     const reelEl = document.getElementById(`reel${i}`);
                     reelEl.innerText = symbols[idx];
-                    reelEl.dataset.index = idx; // インデックスを保存
+                    reelEl.dataset.index = idx;
                 }, 50);
             }
         }
@@ -102,71 +117,59 @@
         function stopReel(i) {
             if (reelIntervals[i] === null) return;
 
-            // 1. 回転停止とSE
             clearInterval(reelIntervals[i]);
             reelIntervals[i] = null;
             document.getElementById(`stop${i}`).disabled = true;
             
-            // ストップSEを鳴らす（毎回最初から再生）
-            const stopSe = audioStop.cloneNode();
-            stopSe.play();
+            // ストップ音をクローンして即再生
+            const s = audioStopSe.cloneNode();
+            s.play();
 
             const currentIdx = document.getElementById(`reel${i}`).dataset.index;
             reelResults[i] = currentIdx;
             stoppedCount++;
 
-            // 2. 音声再生処理
-            // 前の単体ボイスを止める
+            // 前の単独音声を止める
             if (currentVoice) { currentVoice.pause(); currentVoice.currentTime = 0; }
 
             if (stoppedCount < 3) {
-                // 単体音声を再生
+                // 1, 2番目の停止音
                 currentVoice = new Audio(symbolAudioPaths[currentIdx]);
                 currentVoice.play();
             } else {
-                // 3つ目：すべて止まったら
+                // 3番目の停止
                 audioSpin.pause();
                 audioSpin.currentTime = 0;
 
-                // ストップボタンのSEが鳴り止んだタイミングで同時再生
-                stopSe.onended = () => {
-                    playTripleSound();
-                };
+                // ボタンSEが鳴り終わったあとに3つ同時再生
+                s.onended = () => { playTripleSound(); };
             }
         }
 
-        function playTripleSound() {
+        async function playTripleSound() {
+            // 3つの音声を同時にロードして再生
             const audios = reelResults.map(idx => new Audio(symbolAudioPaths[idx]));
-            let maxDuration = 0;
-            let loadedCount = 0;
+            
+            // 全て再生開始
+            audios.forEach(a => a.play());
 
-            // 3つの音声を同時に再生
-            audios.forEach((audio, index) => {
-                audio.play();
-                // 一番長い音声の終了タイミングを計る
-                audio.onloadedmetadata = () => {
-                    if (audio.duration > maxDuration) maxDuration = audio.duration;
-                };
-            });
+            // 全ての音が終わるまで待機
+            await Promise.all(audios.map(a => {
+                return new Promise(resolve => { a.onended = resolve; });
+            }));
 
-            // 簡易的に一番長いであろう時間（あるいは固定時間）待ってから次へ
-            // 全ての音が終わるのを待つ
-            const checkAllEnded = setInterval(() => {
-                const allFinished = audios.every(a => a.ended);
-                if (allFinished) {
-                    clearInterval(checkAllEnded);
-                    handleAutoRestart();
-                }
-            }, 100);
+            handleAutoRestart();
         }
 
         function handleAutoRestart() {
             const isMatch = (reelResults[0] === reelResults[1] && reelResults[1] === reelResults[2]);
-            const waitTime = isMatch ? 3000 : 1000; // 揃ったら3秒、そうでなければ1秒
-
-            setTimeout(() => {
-                startSlot();
-            }, waitTime);
+            
+            if (isMatch) {
+                document.getElementById("message").innerText = "やったー！おそろいだよ！";
+                setTimeout(startSlot, 3500); // 揃った時は長めの余韻（3.5秒）
+            } else {
+                setTimeout(startSlot, 1200); // 通常は1.2秒で次へ
+            }
         }
     </script>
 </body>
