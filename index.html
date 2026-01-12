@@ -15,44 +15,50 @@
             touch-action: manipulation;
         }
 
-        h1 { color: white; text-shadow: 2px 2px 0 var(--accent-pink); font-size: 1.8rem; margin-bottom: 10px; }
+        h1 { color: white; text-shadow: 2px 2px 0 var(--accent-pink); font-size: 1.8rem; margin: 3px 0; }
+        h2 { color: white; text-shadow: 1.8px 1.8px 0 var(--accent-pink); font-size: 1.2rem; margin: 5px 0; }
 
-        h2 { color: white; text-shadow: 1.8px 1.8px 0 var(--accent-pink); font-size: 1.5rem; margin-bottom: 10px; }
+        /* 難易度選択のスタイル */
+        .controls { margin-top: 15px; background: white; padding: 10px; border-radius: 10px; box-shadow: 0 4px 0 #ccc; }
+        select { padding: 5px 10px; font-size: 16px; border-radius: 5px; border: 2px solid var(--accent-pink); }
 
         .slot-machine { 
-            background: var(--main-yellow); padding: 20px; border-radius: 20px;
+            background: var(--main-yellow); margin-top:5px; padding: 20px; border-radius: 20px;
             box-shadow: 0 8px 0 #cddc39; border: 6px solid white;
             width: 90%; max-width: 380px; box-sizing: border-box;
         }
 
         .reels { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
-        
         .reel-unit { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-        
         .reel { 
             height: 90px; line-height: 90px; font-size: 40px;
             background: white; border-radius: 12px; border: 3px solid #555;
             text-align: center; overflow: hidden; font-weight: bold;
         }
 
+        /* 各種ボタン */
+        .btn { font-weight: bold; cursor: pointer; border: none; border-radius: 10px; transition: 0.1s; }
         .stop-btn { 
-            height: 50px; font-weight: bold; font-size: 16px;
-            background: var(--accent-pink); color: white; border: none;
-            border-radius: 10px; box-shadow: 0 4px 0 #ad1457;
-            cursor: pointer;
+            height: 50px; font-size: 16px;
+            background: var(--accent-pink); color: white;
+            box-shadow: 0 4px 0 #ad1457;
         }
-        .stop-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #ad1457; }
+        .stop-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #ad1457; }
         .stop-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; cursor: not-allowed; }
 
+        .main-controls { display: flex; gap: 10px; margin-top: 10px; }
         #start-btn { 
-            width: 100%; padding: 15px; font-size: 22px; font-weight: bold;
-            background: #4caf50; color: white; border: none; border-radius: 15px;
-            box-shadow: 0 6px 0 #2e7d32; cursor: pointer;
+            flex: 2; padding: 15px; font-size: 20px;
+            background: #4caf50; color: white; box-shadow: 0 6px 0 #2e7d32;
         }
-        #start-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        #reset-btn { 
+            flex: 1; padding: 15px; font-size: 16px;
+            background: #777; color: white; box-shadow: 0 6px 0 #444;
+        }
+        .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 currentColor; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* 絵柄が揃った時の余韻メッセージ */
-        #message { height: 30px; margin-top: 15px; font-weight: bold; color: white; }
+        #message { height: 30px; margin-top: 15px; font-weight: bold; color: white; text-align: center; }
     </style>
 </head>
 <body>
@@ -64,54 +70,87 @@
         <div class="reels">
             <div class="reel-unit">
                 <div id="reel0" class="reel">〇</div>
-                <button id="stop0" class="stop-btn" disabled onclick="stopReel(0)">STOP!</button>
+                <button id="stop0" class="btn stop-btn" disabled onclick="stopReel(0)">STOP!</button>
             </div>
             <div class="reel-unit">
                 <div id="reel1" class="reel">〇</div>
-                <button id="stop1" class="stop-btn" disabled onclick="stopReel(1)">STOP!</button>
+                <button id="stop1" class="btn stop-btn" disabled onclick="stopReel(1)">STOP!</button>
             </div>
             <div class="reel-unit">
                 <div id="reel2" class="reel">〇</div>
-                <button id="stop2" class="stop-btn" disabled onclick="stopReel(2)">STOP!</button>
+                <button id="stop2" class="btn stop-btn" disabled onclick="stopReel(2)">STOP!</button>
             </div>
         </div>
-        <button id="start-btn" onclick="startSlot()">START!!</button>
+        <div class="main-controls">
+            <button id="start-btn" class="btn" onclick="startSlot()">START!!</button>
+            <button id="reset-btn" class="btn" onclick="resetSlot()">RESET</button>
+        </div>
         <div id="message"></div>
     </div>
 
+    <div class="controls">
+        <label>難易度：</label>
+        <select id="difficulty" onchange="changeDifficulty()">
+            <option value="easy">易</option>
+            <option value="normal">普</option>
+            <option value="hard" selected>難</option>
+        </select>
+    </div>
+
     <script>
-        const symbols = ["〇", "△", "□", "●", "▲", "■", "||", "=", "|||", "≡"];
-        
-        // 音声定義
-        const audioSpin = new Audio('spin.mp3');
-        audioSpin.loop = true;
-        const audioStopSe = new Audio('stop_btn.mp3');
-        
-        const symbolAudioPaths = [
-            'maru.mp3', 'sankaku.mp3', 'shikaku.mp3', 
-            'kuromaru.mp3', 'kurosankaku.mp3', 'kuroshikaku.mp3',
-            'line2v.mp3', 'line2h.mp3', 'line3v.mp3', 'line3h.mp3'
-        ];
-        
+        // 難易度ごとの設定
+        const config = {
+            easy: {
+                symbols: ["|", "ー", "＋"],
+                sounds: ["line1v.mp3", "line1h.mp3", "cross.mp3"]
+            },
+            normal: {
+                symbols: ["▽", "◇", "▼", "◆", "♡"],
+                sounds: ["shita_sankaku.mp3", "dia.mp3", "kuro_shita_sankaku.mp3", "kuro_dia.mp3", "heart.mp3"]
+            },
+            hard: {
+                symbols: ["〇", "△", "□", "●", "▲", "■", "||", "=", "|||", "≡"],
+                sounds: ['maru.mp3', 'sankaku.mp3', 'shikaku.mp3', 'kuromaru.mp3', 'kurosankaku.mp3', 'kuroshikaku.mp3', 'line2v.mp3', 'line2h.mp3', 'line3v.mp3', 'line3h.mp3']
+            }
+        };
+
+        let currentMode = "hard";
         let reelIntervals = [null, null, null];
         let reelResults = [null, null, null];
         let stoppedCount = 0;
         let currentVoice = null;
+        let autoTimer = null; // 自動再開のタイマー用
+
+        const audioSpin = new Audio('spin.mp3');
+        audioSpin.loop = true;
+        const audioStopSe = new Audio('stop_btn.mp3');
+
+        function changeDifficulty() {
+            resetSlot();
+            currentMode = document.getElementById("difficulty").value;
+            // リールの初期表示を各モードの最初の絵柄にする
+            for(let i=0; i<3; i++) {
+                document.getElementById(`reel${i}`).innerText = config[currentMode].symbols[0];
+            }
+        }
 
         function startSlot() {
+            clearTimeout(autoTimer);
             stoppedCount = 0;
             reelResults = [null, null, null];
             document.getElementById("start-btn").disabled = true;
+            document.getElementById("difficulty").disabled = true;
             document.getElementById("message").innerText = "";
             
-            audioSpin.play().catch(() => { console.log("ユーザー操作が必要です"); });
+            audioSpin.play().catch(() => {});
 
             for (let i = 0; i < 3; i++) {
                 document.getElementById(`stop${i}`).disabled = false;
                 reelIntervals[i] = setInterval(() => {
-                    const idx = Math.floor(Math.random() * symbols.length);
+                    const modeData = config[currentMode];
+                    const idx = Math.floor(Math.random() * modeData.symbols.length);
                     const reelEl = document.getElementById(`reel${i}`);
-                    reelEl.innerText = symbols[idx];
+                    reelEl.innerText = modeData.symbols[idx];
                     reelEl.dataset.index = idx;
                 }, 50);
             }
@@ -124,7 +163,6 @@
             reelIntervals[i] = null;
             document.getElementById(`stop${i}`).disabled = true;
             
-            // ストップ音をクローンして即再生
             const s = audioStopSe.cloneNode();
             s.play();
 
@@ -132,31 +170,22 @@
             reelResults[i] = currentIdx;
             stoppedCount++;
 
-            // 前の単独音声を止める
             if (currentVoice) { currentVoice.pause(); currentVoice.currentTime = 0; }
 
             if (stoppedCount < 3) {
-                // 1, 2番目の停止音
-                currentVoice = new Audio(symbolAudioPaths[currentIdx]);
+                currentVoice = new Audio(config[currentMode].sounds[currentIdx]);
                 currentVoice.play();
             } else {
-                // 3番目の停止
                 audioSpin.pause();
                 audioSpin.currentTime = 0;
-
-                // ボタンSEが鳴り終わったあとに3つ同時再生
                 s.onended = () => { playTripleSound(); };
             }
         }
 
         async function playTripleSound() {
-            // 3つの音声を同時にロードして再生
-            const audios = reelResults.map(idx => new Audio(symbolAudioPaths[idx]));
-            
-            // 全て再生開始
+            const audios = reelResults.map(idx => new Audio(config[currentMode].sounds[idx]));
             audios.forEach(a => a.play());
 
-            // 全ての音が終わるまで待機
             await Promise.all(audios.map(a => {
                 return new Promise(resolve => { a.onended = resolve; });
             }));
@@ -166,12 +195,26 @@
 
         function handleAutoRestart() {
             const isMatch = (reelResults[0] === reelResults[1] && reelResults[1] === reelResults[2]);
+            const waitTime = isMatch ? 3000 : 1000;
+            autoTimer = setTimeout(startSlot, waitTime);
+        }
+
+        function resetSlot() {
+            // 全て停止
+            clearTimeout(autoTimer);
+            reelIntervals.forEach((interval, i) => {
+                clearInterval(interval);
+                reelIntervals[i] = null;
+                document.getElementById(`stop${i}`).disabled = true;
+            });
             
-            if (isMatch) {
-                setTimeout(startSlot, 3000); // 揃った時は長めの余韻（3.5秒）
-            } else {
-                setTimeout(startSlot, 1000); // 通常は1.2秒で次へ
-            }
+            audioSpin.pause();
+            audioSpin.currentTime = 0;
+            if (currentVoice) { currentVoice.pause(); currentVoice.currentTime = 0; }
+
+            document.getElementById("start-btn").disabled = false;
+            document.getElementById("difficulty").disabled = false;
+            document.getElementById("message").innerText = "リセットしました";
         }
     </script>
 </body>
