@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>元気いっぱい！サウンドスロット</title>
+    <title>元気いっぱい！ボイススロット</title>
     <style>
         :root { --main-yellow: #ffeb3b; --accent-pink: #ff4081; --bg-blue: #00bcd4; }
         
@@ -16,6 +16,8 @@
         }
 
         h1 { color: white; text-shadow: 2px 2px 0 var(--accent-pink); font-size: 1.8rem; margin-bottom: 10px; }
+
+        h2 { color: white; text-shadow: 1.8px 1.8px 0 var(--accent-pink); font-size: 1.5rem; margin-bottom: 10px; }
 
         .slot-machine { 
             background: var(--main-yellow); padding: 20px; border-radius: 20px;
@@ -56,7 +58,7 @@
 <body>
 
     <h2>元気いっぱい！</h2>
-    <h1>サウンドスロット</h1>
+    <h1>ボイススロット</h1>
 
     <div class="slot-machine">
         <div class="reels">
@@ -166,10 +168,9 @@
             const isMatch = (reelResults[0] === reelResults[1] && reelResults[1] === reelResults[2]);
             
             if (isMatch) {
-                document.getElementById("message").innerText = "やったー！おそろいだよ！";
-                setTimeout(startSlot, 3500); // 揃った時は長めの余韻（3.5秒）
+                setTimeout(startSlot, 3000); // 揃った時は長めの余韻（3.5秒）
             } else {
-                setTimeout(startSlot, 1200); // 通常は1.2秒で次へ
+                setTimeout(startSlot, 1000); // 通常は1.2秒で次へ
             }
         }
     </script>
