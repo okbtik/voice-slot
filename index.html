@@ -16,21 +16,33 @@
         }
 
         h1 { color: white; text-shadow: 2px 2px 0 var(--accent-pink); font-size: 1.8rem; margin: 3px 0; }
-        h2 { color: white; text-shadow: 1.8px 1.8px 0 var(--accent-pink); font-size: 1.2rem; margin: 5px 0 0 0; }
+        h2 { color: white; text-shadow: 1.8px 1.8px 0 var(--accent-pink); font-size: 1.2rem; margin: 50px 0 0 0; }
 
-        /* シャッフルボタン：タイトルと台の間、台寄りに配置 */
-        .top-actions { margin-top: 10px; margin-bottom: 5px; }
+        .top-actions { margin-top: 10px; margin-bottom: 50px; }
+
+        /* シャッフルボタンのスタイル調整 */
         #shuffle-btn {
             padding: 8px 15px; font-size: 8px; background: #9c27b0;
-            color: white; border-radius: 8px; border: none; box-shadow: 0 4px 0 #7b1fa2;
+            color: white; border-radius: 12px; border: none; box-shadow: 0 4px 0 #7b1fa2;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
         }
         #shuffle-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #7b1fa2; }
         #shuffle-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; opacity: 0.7; }
 
+        /* スロット台本体と光るアニメーション */
         .slot-machine { 
-            background: var(--main-yellow); padding: 20px; border-radius: 20px;
+            background: var(--main-yellow); margin-top: 30px; padding: 20px; border-radius: 20px;
             box-shadow: 0 8px 0 #cddc39; border: 6px solid white;
             width: 90%; max-width: 380px; box-sizing: border-box;
+            transition: background-color 0.2s;
+        }
+
+        /* ぴかぴか光るクラス */
+        .pikapika { animation: flash-animation 0.2s infinite; }
+        @keyframes flash-animation {
+            0% { background-color: var(--main-yellow); border-color: white; }
+            50% { background-color: #ffffff; border-color: var(--accent-pink); }
+            100% { background-color: var(--main-yellow); border-color: white; }
         }
 
         .reels { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
@@ -41,9 +53,7 @@
             text-align: center; overflow: hidden; font-weight: bold;
         }
 
-        /* 共通ボタン設定 */
         .btn { font-weight: bold; cursor: pointer; border: none; border-radius: 10px; transition: 0.1s; }
-        
         .stop-btn { 
             height: 50px; font-size: 16px;
             background: var(--accent-pink); color: white;
@@ -53,25 +63,13 @@
         .stop-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; cursor: not-allowed; }
 
         .main-controls { display: flex; gap: 10px; margin-top: 10px; }
-        
-        #start-btn { 
-            flex: 2; padding: 15px; font-size: 20px;
-            background: #4caf50; color: white; box-shadow: 0 6px 0 #2e7d32;
-        }
+        #start-btn { flex: 2; padding: 15px; font-size: 20px; background: #4caf50; color: white; box-shadow: 0 6px 0 #2e7d32; }
         #start-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 3px 0 #2e7d32; }
-        #start-btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; opacity: 0.8; }
-
-        #reset-btn { 
-            flex: 1; padding: 15px; font-size: 16px;
-            background: #777; color: white; box-shadow: 0 6px 0 #444;
-        }
+        #reset-btn { flex: 1; padding: 15px; font-size: 16px; background: #777; color: white; box-shadow: 0 6px 0 #444; }
         #reset-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 3px 0 #444; }
-        #reset-btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; opacity: 0.8; }
+        .btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; opacity: 0.8; }
 
-        /* 下部設定エリア：2つのボックスを横並びに */
-        .settings-area { 
-            display: flex; gap: 10px; margin-top: 15px; width: 90%; max-width: 300px; 
-        }
+        .settings-area { display: flex; gap: 10px; margin-top: 15px; width: 90%; max-width: 300px; }
         .setting-box { 
             flex: 1; background: white; padding: 10px; border-radius: 10px; 
             box-shadow: 0 4px 0 #ccc; display: flex; align-items: center; justify-content: center; gap: 5px;
@@ -79,7 +77,6 @@
         }
         select { padding: 5px; border-radius: 5px; border: 2px solid var(--accent-pink); }
 
-        /* スイッチのスタイル */
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
@@ -96,7 +93,7 @@
     <h2>元気いっぱい！</h2>
     <h1>ボイススロット</h1>
 
-    <div class="slot-machine">
+    <div id="machine-body" class="slot-machine">
         <div class="reels">
             <div class="reel-unit">
                 <div id="reel0" class="reel">〇</div>
@@ -112,8 +109,8 @@
             </div>
         </div>
         <div class="main-controls">
-            <button id="start-btn" class="btn" onclick="startSlot()">START!!</button>
-            <button id="reset-btn" class="btn" disabled onclick="resetSlot()">RESET</button>
+            <button id="start-btn" class="btn" onclick="handleStart()">START!!</button>
+            <button id="reset-btn" class="btn" disabled onclick="handleReset()">RESET</button>
         </div>
         <div id="message"></div>
     </div>
@@ -121,7 +118,7 @@
     <div class="settings-area">
         <div class="setting-box">
             <label>難易度:</label>
-            <select id="difficulty" onchange="changeDifficulty()">
+            <select id="difficulty" onchange="handleDifficultyChange()">
                 <option value="easy">易</option>
                 <option value="normal">普</option>
                 <option value="hard" selected>難</option>
@@ -130,17 +127,17 @@
         <div class="setting-box">
             <label>推理モード:</label>
             <label class="switch">
-                <input type="checkbox" id="deduction-mode">
+                <input type="checkbox" id="deduction-mode" onchange="playBtnSound()">
                 <span class="slider"></span>
             </label>
         </div>
     </div>
 
     <div class="top-actions">
-        <button id="shuffle-btn" class="btn" onclick="shuffleSounds()">
-	    <img src="shuffle.png" alt="shuffle-image" width="30" height="20">
-	    <br>VOICE SHUFFLE
-	</button>
+        <button id="shuffle-btn" class="btn" onclick="handleShuffle()">
+            VOICE SHUFFLE
+            <img src="shuffle.png" alt="shuffle-image" width="45" height="30">
+        </button>
     </div>
 
     <script>
@@ -167,6 +164,19 @@
         const audioSpin = new Audio('spin.mp3');
         audioSpin.loop = true;
         const audioStopSe = new Audio('stop_btn.mp3');
+        const audioBtn = new Audio('btn.mp3'); // 共通ボタンSE
+
+        // ボタン音を鳴らす関数
+        function playBtnSound() {
+            const b = audioBtn.cloneNode();
+            b.play();
+        }
+
+        // ラッパー関数：SEを鳴らしてから元の処理を実行
+        function handleShuffle() { playBtnSound(); shuffleSounds(); }
+        function handleStart() { playBtnSound(); startSlot(); }
+        function handleReset() { playBtnSound(); resetSlot(); }
+        function handleDifficultyChange() { playBtnSound(); changeDifficulty(); }
 
         function shuffleSounds() {
             const arr = shuffledSounds[currentMode];
@@ -196,6 +206,7 @@
 
         function startSlot() {
             clearTimeout(autoTimer);
+            document.getElementById("machine-body").classList.remove("pikapika"); // 光る演出を消す
             stoppedCount = 0;
             reelResults = [null, null, null];
             document.getElementById("start-btn").disabled = true;
@@ -255,20 +266,28 @@
         async function playTripleSound() {
             const sounds = reelResults.map(idx => shuffledSounds[currentMode][idx]);
             const audios = sounds.map(path => playManagedAudio(path));
+            
+            // 揃ったか判定
+            const isMatch = (reelResults[0] === reelResults[1] && reelResults[1] === reelResults[2]);
+            if (isMatch) {
+                document.getElementById("machine-body").classList.add("pikapika");
+                document.getElementById("message").innerText = "やったー！おそろいだよ！";
+            }
+
             await Promise.all(audios.map(a => {
                 return new Promise(resolve => { a.onended = resolve; });
             }));
-            handleAutoRestart();
+            handleAutoRestart(isMatch);
         }
 
-        function handleAutoRestart() {
-            const isMatch = (reelResults[0] === reelResults[1] && reelResults[1] === reelResults[2]);
-            const waitTime = isMatch ? 2000 : 800;
+        function handleAutoRestart(isMatch) {
+            const waitTime = isMatch ? 3000 : 800;
             autoTimer = setTimeout(startSlot, waitTime);
         }
 
         function resetSlot() {
             clearTimeout(autoTimer);
+            document.getElementById("machine-body").classList.remove("pikapika");
             reelIntervals.forEach((interval, i) => {
                 if (interval) clearInterval(interval);
                 reelIntervals[i] = null;
