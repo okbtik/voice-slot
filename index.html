@@ -16,13 +16,19 @@
         }
 
         h1 { color: white; text-shadow: 2px 2px 0 var(--accent-pink); font-size: 1.8rem; margin: 3px 0; }
-        h2 { color: white; text-shadow: 1.8px 1.8px 0 var(--accent-pink); font-size: 1.2rem; margin: 5px 0; }
+        h2 { color: white; text-shadow: 1.8px 1.8px 0 var(--accent-pink); font-size: 1.2rem; margin: 5px 0 0 0; }
 
-        .controls { margin-top: 15px; background: white; padding: 10px; border-radius: 10px; box-shadow: 0 4px 0 #ccc; }
-        select { padding: 5px 10px; font-size: 16px; border-radius: 5px; border: 2px solid var(--accent-pink); }
+        /* シャッフルボタン：タイトルと台の間、台寄りに配置 */
+        .top-actions { margin-top: 10px; margin-bottom: 5px; }
+        #shuffle-btn {
+            padding: 8px 15px; font-size: 8px; background: #9c27b0;
+            color: white; border-radius: 8px; border: none; box-shadow: 0 4px 0 #7b1fa2;
+        }
+        #shuffle-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #7b1fa2; }
+        #shuffle-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; opacity: 0.7; }
 
         .slot-machine { 
-            background: var(--main-yellow); margin-top:5px; padding: 20px; border-radius: 20px;
+            background: var(--main-yellow); padding: 20px; border-radius: 20px;
             box-shadow: 0 8px 0 #cddc39; border: 6px solid white;
             width: 90%; max-width: 380px; box-sizing: border-box;
         }
@@ -35,7 +41,9 @@
             text-align: center; overflow: hidden; font-weight: bold;
         }
 
+        /* 共通ボタン設定 */
         .btn { font-weight: bold; cursor: pointer; border: none; border-radius: 10px; transition: 0.1s; }
+        
         .stop-btn { 
             height: 50px; font-size: 16px;
             background: var(--accent-pink); color: white;
@@ -45,19 +53,43 @@
         .stop-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; cursor: not-allowed; }
 
         .main-controls { display: flex; gap: 10px; margin-top: 10px; }
+        
         #start-btn { 
             flex: 2; padding: 15px; font-size: 20px;
             background: #4caf50; color: white; box-shadow: 0 6px 0 #2e7d32;
         }
+        #start-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 3px 0 #2e7d32; }
+        #start-btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; opacity: 0.8; }
+
         #reset-btn { 
             flex: 1; padding: 15px; font-size: 16px;
             background: #777; color: white; box-shadow: 0 6px 0 #444;
         }
-        .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 currentColor; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        #reset-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 3px 0 #444; }
+        #reset-btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; opacity: 0.8; }
 
-        #message { height: 30px; margin-top: 15px; font-weight: bold; color: white; text-align: center; }
+        /* 下部設定エリア：2つのボックスを横並びに */
+        .settings-area { 
+            display: flex; gap: 10px; margin-top: 15px; width: 90%; max-width: 300px; 
+        }
+        .setting-box { 
+            flex: 1; background: white; padding: 10px; border-radius: 10px; 
+            box-shadow: 0 4px 0 #ccc; display: flex; align-items: center; justify-content: center; gap: 5px;
+            font-size: 14px; font-weight: bold;
+        }
+        select { padding: 5px; border-radius: 5px; border: 2px solid var(--accent-pink); }
+
+        /* スイッチのスタイル */
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-pink); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        #message { height: 25px; margin-top: 10px; font-weight: bold; color: white; text-align: center; font-size: 14px; }
     </style>
+    <link rel="icon" href="./owner.png">
 </head>
 <body>
 
@@ -86,13 +118,29 @@
         <div id="message"></div>
     </div>
 
-    <div class="controls">
-        <label>難易度：</label>
-        <select id="difficulty" onchange="changeDifficulty()">
-            <option value="easy">易</option>
-            <option value="normal">普</option>
-            <option value="hard" selected>難</option>
-        </select>
+    <div class="settings-area">
+        <div class="setting-box">
+            <label>難易度:</label>
+            <select id="difficulty" onchange="changeDifficulty()">
+                <option value="easy">易</option>
+                <option value="normal">普</option>
+                <option value="hard" selected>難</option>
+            </select>
+        </div>
+        <div class="setting-box">
+            <label>推理モード:</label>
+            <label class="switch">
+                <input type="checkbox" id="deduction-mode">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="top-actions">
+        <button id="shuffle-btn" class="btn" onclick="shuffleSounds()">
+	    <img src="shuffle.png" alt="shuffle-image" width="30" height="20">
+	    <br>VOICE SHUFFLE
+	</button>
     </div>
 
     <script>
@@ -102,25 +150,39 @@
             hard: { symbols: ["〇", "△", "□", "●", "▲", "■", "||", "=", "|||", "≡"], sounds: ['maru.mp3', 'sankaku.mp3', 'shikaku.mp3', 'kuromaru.mp3', 'kurosankaku.mp3', 'kuroshikaku.mp3', 'line2v.mp3', 'line2h.mp3', 'line3v.mp3', 'line3h.mp3'] }
         };
 
+        let shuffledSounds = { easy: [], normal: [], hard: [] };
+        function initShuffledSounds() {
+            for (let mode in config) { shuffledSounds[mode] = [...config[mode].sounds]; }
+        }
+        initShuffledSounds();
+
         let currentMode = "hard";
         let reelIntervals = [null, null, null];
         let reelResults = [null, null, null];
         let stoppedCount = 0;
         let autoTimer = null;
         let activeAudios = [];
-        let currentSingleVoice = null; // 1, 2個目の音を管理
+        let currentSingleVoice = null;
 
         const audioSpin = new Audio('spin.mp3');
         audioSpin.loop = true;
         const audioStopSe = new Audio('stop_btn.mp3');
 
+        function shuffleSounds() {
+            const arr = shuffledSounds[currentMode];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            document.getElementById("message").innerText = "ボイスを入れ替えました！";
+            setTimeout(() => { if(stoppedCount === 0) document.getElementById("message").innerText = ""; }, 2000);
+        }
+
         function playManagedAudio(audioPath) {
             const audio = new Audio(audioPath);
             activeAudios.push(audio);
             audio.play();
-            audio.onended = () => {
-                activeAudios = activeAudios.filter(a => a !== audio);
-            };
+            audio.onended = () => { activeAudios = activeAudios.filter(a => a !== audio); };
             return audio;
         }
 
@@ -139,6 +201,8 @@
             document.getElementById("start-btn").disabled = true;
             document.getElementById("reset-btn").disabled = false;
             document.getElementById("difficulty").disabled = true;
+            document.getElementById("deduction-mode").disabled = true;
+            document.getElementById("shuffle-btn").disabled = true;
             document.getElementById("message").innerText = "";
             
             audioSpin.play().catch(() => {});
@@ -157,8 +221,6 @@
 
         function stopReel(i) {
             if (reelIntervals[i] === null) return;
-
-            // --- 1. まず即座にリールを止める ---
             clearInterval(reelIntervals[i]);
             reelIntervals[i] = null;
             document.getElementById(`stop${i}`).disabled = true;
@@ -167,28 +229,22 @@
             reelResults[i] = currentIdx;
             stoppedCount++;
 
-            // --- 2. 音声の処理 ---
-            // 前の単独音声を止める
-            if (currentSingleVoice) {
-                currentSingleVoice.pause();
-                currentSingleVoice.currentTime = 0;
-            }
+            if (currentSingleVoice) { currentSingleVoice.pause(); currentSingleVoice.currentTime = 0; }
 
-            // ストップボタンSEを鳴らす
             const s = audioStopSe.cloneNode();
             activeAudios.push(s);
             s.play();
 
+            const isDeduction = document.getElementById("deduction-mode").checked;
+
             if (stoppedCount < 3) {
-                // 1, 2枚目：絵柄の音を流す
-                currentSingleVoice = playManagedAudio(config[currentMode].sounds[currentIdx]);
+                if (!isDeduction) {
+                    currentSingleVoice = playManagedAudio(shuffledSounds[currentMode][currentIdx]);
+                }
             } else {
-                // 3枚目：すべて止まった
                 document.getElementById("reset-btn").disabled = true;
                 audioSpin.pause();
                 audioSpin.currentTime = 0;
-
-                // ボタンSEの終了を待ってから3つ同時再生を開始
                 s.onended = () => {
                     activeAudios = activeAudios.filter(a => a !== s);
                     playTripleSound();
@@ -197,14 +253,11 @@
         }
 
         async function playTripleSound() {
-            const sounds = reelResults.map(idx => config[currentMode].sounds[idx]);
+            const sounds = reelResults.map(idx => shuffledSounds[currentMode][idx]);
             const audios = sounds.map(path => playManagedAudio(path));
-
-            // 全ての音が終わるまで待つ
             await Promise.all(audios.map(a => {
                 return new Promise(resolve => { a.onended = resolve; });
             }));
-
             handleAutoRestart();
         }
 
@@ -221,24 +274,17 @@
                 reelIntervals[i] = null;
                 document.getElementById(`stop${i}`).disabled = true;
             });
-
-            activeAudios.forEach(a => {
-                a.pause();
-                a.currentTime = 0;
-            });
+            activeAudios.forEach(a => { a.pause(); a.currentTime = 0; });
             activeAudios = [];
-            
-            if (currentSingleVoice) {
-                currentSingleVoice.pause();
-                currentSingleVoice.currentTime = 0;
-            }
-
+            if (currentSingleVoice) { currentSingleVoice.pause(); currentSingleVoice.currentTime = 0; }
             audioSpin.pause();
             audioSpin.currentTime = 0;
 
             document.getElementById("start-btn").disabled = false;
             document.getElementById("reset-btn").disabled = true;
             document.getElementById("difficulty").disabled = false;
+            document.getElementById("deduction-mode").disabled = false;
+            document.getElementById("shuffle-btn").disabled = false;
             document.getElementById("message").innerText = "リセットしました";
         }
     </script>
