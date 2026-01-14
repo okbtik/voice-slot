@@ -1,0 +1,217 @@
+
+        :root { --main-yellow: #ffeb3b; --accent-pink: #ff4081; --bg-blue: #00bcd4; }
+        
+        body { 
+            background: var(--bg-blue); 
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; min-height: 100vh; margin: 0; color: #333;
+            touch-action: manipulation;
+        }
+
+        h1 { color: white; text-shadow: 2px 2px 0 var(--accent-pink); font-size: 1.8rem; margin: 3px 0; }
+        h2 { color: white; text-shadow: 1.8px 1.8px 0 var(--accent-pink); font-size: 1.2rem; margin: 50px 0 0 0; }
+
+        .top-actions { margin-top: 10px; margin-bottom: 50px; }
+
+        /* シャッフルボタンのスタイル調整 */
+        #shuffle-btn {
+            padding: 8px 15px; font-size: 8px; background: #9c27b0;
+            color: white; border-radius: 12px; border: none; box-shadow: 0 4px 0 #7b1fa2;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+        }
+        #shuffle-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #7b1fa2; }
+        #shuffle-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; opacity: 0.7; }
+
+        /* スロット台本体と光るアニメーション */
+        .slot-machine { 
+            background: var(--main-yellow); margin-top: 30px; padding: 20px; border-radius: 20px;
+            box-shadow: 0 8px 0 #cddc39; border: 6px solid white;
+            width: 90%; max-width: 380px; box-sizing: border-box;
+            transition: background-color 0.2s;
+        }
+
+        /* ぴかぴか光るクラス */
+        .pikapika { animation: flash-animation 0.2s infinite; }
+        @keyframes flash-animation {
+            0% { background-color: var(--main-yellow); border-color: white; }
+            50% { background-color: #ffffff; border-color: var(--accent-pink); }
+            100% { background-color: var(--main-yellow); border-color: white; }
+        }
+
+        .reels { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
+        .reel-unit { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+        .reel { 
+            height: 90px; line-height: 90px; font-size: 40px;
+            background: white; border-radius: 12px; border: 3px solid #555;
+            text-align: center; overflow: hidden; font-weight: bold;
+        }
+
+        .btn { font-weight: bold; cursor: pointer; border: none; border-radius: 10px; transition: 0.1s; }
+        .stop-btn { 
+            height: 50px; font-size: 16px;
+            background: var(--accent-pink); color: white;
+            box-shadow: 0 4px 0 #ad1457;
+        }
+        .stop-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #ad1457; }
+        .stop-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; cursor: not-allowed; }
+
+        .main-controls { display: flex; gap: 10px; margin-top: 10px; }
+        #start-btn { flex: 2; padding: 15px; font-size: 20px; background: #4caf50; color: white; box-shadow: 0 6px 0 #2e7d32; }
+        #start-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 3px 0 #2e7d32; }
+        #reset-btn { flex: 1; padding: 15px; font-size: 16px; background: #777; color: white; box-shadow: 0 6px 0 #444; }
+        #reset-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 3px 0 #444; }
+        .btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; opacity: 0.8; }
+
+        .settings-area { display: flex; gap: 10px; margin-top: 15px; width: 90%; max-width: 300px; }
+        .setting-box { 
+            flex: 1; background: white; padding: 10px; border-radius: 10px; 
+            box-shadow: 0 4px 0 #ccc; display: flex; align-items: center; justify-content: center; gap: 5px;
+            font-size: 14px; font-weight: bold;
+        }
+        select { padding: 5px; border-radius: 5px; border: 2px solid var(--accent-pink); }
+
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-pink); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        #message { height: 25px; margin-top: 10px; font-weight: bold; color: white; text-align: center; font-size: 14px; }
+
+.intro-container { display: flex; align-items: center; gap: 10px; margin: 10px 0; max-width: 380px; }
+.owner-icon { width: 60px; height: 60px; border-radius: 50%; border: 3px solid white; background: white; }
+.speech-bubble { 
+    background: white; padding: 10px 15px; border-radius: 15px; position: relative;
+    font-size: 14px; font-weight: bold; box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+}
+.speech-bubble::after { /* 吹き出しのしっぽ */
+    content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+    border-top: 10px solid transparent; border-bottom: 10px solid transparent; border-right: 10px solid white;
+}
+
+footer { width: 100%; background: #546e7a; color: white; padding: 40px 0; margin-top: 80px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.footer-links { margin-bottom: 15px; }
+.footer-links a { color: white; text-decoration: none; margin: 0 10px; font-weight: bold; font-size: 14px; }
+.footer-owner { width: 50px; height: 50px; }
+.footer-bubble { font-size: 12px; color: #333; }
+
+/* 遊び方セクションのスタイル */
+.how-to-play {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 30px auto;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.how-to-play h3 {
+    margin: 0 0 10px 0;
+    color: var(--accent-pink);
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+/* プライバシーポリシーのコンテンツ枠 */
+.policy-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    color: #333;
+    line-height: 1.6;
+}
+
+/* ゲームに戻るボタン（contact.htmlと共通） */
+.back-btn {
+    display: inline-block;
+    background: white; 
+    padding: 12px 24px; 
+    text-decoration: none; 
+    color: var(--bg-blue); 
+    box-shadow: 0 4px 0 #ccc;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: 0.1s;
+    border: none;
+    cursor: pointer;
+}
+.back-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #ccc;
+}
+
+/* --- style.css に追加 --- */
+
+.contact-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.form-group label span {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: normal;
+}
+
+.form-group input, 
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus {
+    border-color: var(--accent-pink);
+    outline: none;
+}
+
+.form-note {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.send-btn {
+    width: 40%;
+    padding: 15px;
+    background: var(--accent-pink) !important;
+    color: white !important;
+    font-size: 1.1rem;
+    box-shadow: 0 6px 0 #ad1457 !important;
+}
+
+.send-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 3px 0 #ad1457 !important;
+}
