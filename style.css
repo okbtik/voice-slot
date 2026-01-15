@@ -10,9 +10,9 @@
         }
 
         h1 { color: white; text-shadow: 2px 2px 0 var(--accent-pink); font-size: 1.8rem; margin: 3px 0; }
-        h2 { color: white; text-shadow: 1.8px 1.8px 0 var(--accent-pink); font-size: 1.2rem; margin: 50px 0 0 0; }
+        h2 { color: white; text-shadow: 1.8px 1.8px 0 var(--accent-pink); font-size: 1.2rem; }
 
-        .top-actions { margin-top: 10px; margin-bottom: 50px; }
+        .top-actions { display: flex; gap: 50px; margin-top: 10px; margin-bottom: 50px; justify-content: center; width: 90%; max-width: 300px; }
 
         /* シャッフルボタンのスタイル調整 */
         #shuffle-btn {
@@ -22,6 +22,28 @@
         }
         #shuffle-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #7b1fa2; }
         #shuffle-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; opacity: 0.7; }
+
+	#answer-btn { background: #fd7e00; box-shadow: 0 4px 0 #b66514; font-size: 8px; color: white; width: 70px;}
+        #answer-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #b66514; }
+        #answer-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; opacity: 0.7; }
+
+/* 答え合わせモーダルのスタイル */
+#answer-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.2); z-index: 2000;
+    display: flex; align-items: center; justify-content: center;
+}
+.answer-content {
+    background: white; padding: 20px; border-radius: 15px;
+    width: 85%; max-width: 400px; max-height: 80vh; overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    text-align: center;
+}
+.answer-content table { width: 100%; border-collapse: collapse; }
+.answer-content th, .answer-content td { border-bottom: 1.5px solid #eee; padding: 10px; text-align: center; }
+
+#close-btn { height: 40px; margin-top:15px; background:#777; width:50%; color: white; justify-content: center; box-shadow: 0 4px 0 #555555; }
+#close-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #555555; }
 
         /* スロット台本体と光るアニメーション */
         .slot-machine { 
@@ -47,6 +69,14 @@
             text-align: center; overflow: hidden; font-weight: bold;
         }
 
+
+        .main-controls { display: flex; gap: 10px; margin-top: 10px; }
+        #start-btn { flex: 2; padding: 15px; font-size: 20px; background: #4caf50; color: white; box-shadow: 0 6px 0 #2e7d32; }
+        #start-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 3px 0 #2e7d32; }
+        #reset-btn { flex: 1; padding: 15px; font-size: 16px; background: #777; color: white; box-shadow: 0 6px 0 #444; }
+        #reset-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 3px 0 #444; }
+        .btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; opacity: 0.5; }
+
         .btn { font-weight: bold; cursor: pointer; border: none; border-radius: 10px; transition: 0.1s; }
         .stop-btn { 
             height: 50px; font-size: 16px;
@@ -54,14 +84,7 @@
             box-shadow: 0 4px 0 #ad1457;
         }
         .stop-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #ad1457; }
-        .stop-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; cursor: not-allowed; }
-
-        .main-controls { display: flex; gap: 10px; margin-top: 10px; }
-        #start-btn { flex: 2; padding: 15px; font-size: 20px; background: #4caf50; color: white; box-shadow: 0 6px 0 #2e7d32; }
-        #start-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 3px 0 #2e7d32; }
-        #reset-btn { flex: 1; padding: 15px; font-size: 16px; background: #777; color: white; box-shadow: 0 6px 0 #444; }
-        #reset-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 3px 0 #444; }
-        .btn:disabled { background: #ccc; box-shadow: 0 6px 0 #999; cursor: not-allowed; opacity: 0.8; }
+        .stop-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #999; cursor: not-allowed; opacity: 0.8; }
 
         .settings-area { display: flex; gap: 10px; margin-top: 15px; width: 90%; max-width: 300px; }
         .setting-box { 
@@ -97,16 +120,6 @@ footer { width: 100%; background: #546e7a; color: white; padding: 40px 0; margin
 .footer-owner { width: 50px; height: 50px; }
 .footer-bubble { font-size: 12px; color: #333; }
 
-/* 遊び方セクションのスタイル */
-.how-to-play {
-    background: white;
-    border-radius: 20px;
-    padding: 20px;
-    margin: 30px auto;
-    width: 90%;
-    max-width: 380px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
 
 .how-to-play h3 {
     margin: 0 0 10px 0;
@@ -215,3 +228,113 @@ footer { width: 100%; background: #546e7a; color: white; padding: 40px 0; margin
     transform: translateY(3px);
     box-shadow: 0 3px 0 #ad1457 !important;
 }
+
+/* すべての要素に対して、余白や枠線を幅に含める設定（はみ出し防止） */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* 遊び方、お問い合わせ、ポリシーのカード共通設定 */
+.how-to-play, 
+.contact-card, 
+.policy-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px auto; /* 左右をautoにすることで中央寄せ */
+    width: 90%;        /* 画面の横幅9割 */
+    max-width: 500px;  /* PCなど大きな画面でも広がりすぎないように制限 */
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    
+    /* 念のため、中の文字がはみ出さないようにする */
+    word-wrap: break-word; 
+    overflow-wrap: break-word;
+}
+
+/* 吹き出しの中の文字もはみ出さないように調整 */
+.speech-bubble {
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+/* --- headerスタイルの追加 --- */
+.site-header {
+    width: 100%;
+    height: 60px;
+    background opacity: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    position: fixed; /* 画面の一番上に固定 */
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.header-logo img {
+    height: 40px;
+    width: 40px;
+    transition: transform 0.2s;
+}
+.header-logo img:active { transform: scale(0.9); }
+
+/* メニューボタン（三本線） */
+.menu-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+}
+.menu-toggle .bar {
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    border-radius: 2px;
+}
+
+/* メニューリスト */
+.nav-menu {
+    position: absolute;
+    top: 60px;
+    right: -200px; /* 最初は画面の外に隠す */
+    background: white;
+    width: 180px;
+    border-radius: 0 0 0 15px;
+    box-shadow: -2px 2px 5px rgba(0,0,0,0.1);
+    transition: right 0.3s ease;
+    z-index: 1001;
+}
+.nav-menu.open {
+    right: 0; /* 表示 */
+}
+.nav-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 10px 0;
+}
+.nav-menu li a {
+    display: block;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+.nav-menu li a:hover {
+    background: #f0f0f0;
+}
+
+/* ヘッダーが固定されるので、bodyのトップに余白を作る */
+body {
+    padding-top: 70px;
+}
+
+
+/* 遊び方の装飾 */
+.how-to-play { background: rgba(255,255,255,0.9); padding: 15px; border-radius: 15px; width: 90%; max-width: 500px; margin-top: 20px; }
+.how-to-play h4 { color: var(--accent-pink); margin-bottom: 5px; border-left: 4px solid var(--accent-pink); padding-left: 8px; }
+.how-to-play p { font-size: 13px; margin-bottom: 15px; line-height: 1.5; }
