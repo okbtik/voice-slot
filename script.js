@@ -1,8 +1,20 @@
-        const config = {
-            easy: { symbols: ["|", "ー", "＋"], sounds: ["line1v.mp3", "line1h.mp3", "cross.mp3"] },
-            normal: { symbols: ["▽", "◇", "▼", "◆", "♡"], sounds: ["shita_sankaku.mp3", "dia.mp3", "kuro_shita_sankaku.mp3", "kuro_dia.mp3", "heart.mp3"] },
-            hard: { symbols: ["〇", "△", "□", "●", "▲", "■", "||", "=", "|||", "≡"], sounds: ['maru.mp3', 'sankaku.mp3', 'shikaku.mp3', 'kuromaru.mp3', 'kurosankaku.mp3', 'kuroshikaku.mp3', 'line2v.mp3', 'line2h.mp3', 'line3v.mp3', 'line3h.mp3'] }
-        };
+const config = {
+    easy: { 
+        symbols: ["|", "ー", "＋"], 
+        sounds: ["line1v.mp3", "line1h.mp3", "cross.mp3"],
+        displayNames: ["ごごご、ごめんなさ～い！", "フレーフレー", "ぱんぱかぱーん！"] // 答えとして表示する名前
+    },
+    normal: { 
+        symbols: ["▽", "◇", "▼", "◆", "♡"], 
+        sounds: ["shita_sankaku.mp3", "dia.mp3", "kuro_shita_sankaku.mp3", "kuro_dia.mp3", "heart.mp3"],
+        displayNames: ["だって・・・だってぇ～・・・ヒック", "やったーー！", "げげ～・・・", "もう知らない！", "バイバーイ"]
+    },
+    hard: { 
+        symbols: ["〇", "△", "□", "●", "▲", "■", "||", "=", "|||", "≡"], 
+        sounds: ['maru.mp3', 'sankaku.mp3', 'shikaku.mp3', 'kuromaru.mp3', 'kurosankaku.mp3', 'kuroshikaku.mp3', 'line2v.mp3', 'line2h.mp3', 'line3v.mp3', 'line3h.mp3'],
+        displayNames: ["あははははっ！あははははっ！あははっ！あははっ！", "えー・・・", "がんばれー", "キャー！やだー恥ずかし～！", "シラナイデスヨ", "ちょっと待って", "ハアーイ", "や、やだな～本気にしないでよぉ", "喝(かーーつ)！", "打つべし！打つべし！"]
+    }
+};
 
         let shuffledSounds = { easy: [], normal: [], hard: [] };
         function initShuffledSounds() {
@@ -34,6 +46,7 @@
         function handleStart() { playBtnSound(); startSlot(); }
         function handleReset() { playBtnSound(); resetSlot(); }
         function handleDifficultyChange() { playBtnSound(); changeDifficulty(); }
+	function handleAnswer() { playBtnSound(); toggleAnswer()}
 
         function shuffleSounds() {
             const arr = shuffledSounds[currentMode];
@@ -174,18 +187,123 @@
         }
 
     var submitted = false;
-    document.getElementById('google-form').onsubmit = function() {
+var googleForm = document.getElementById('google-form');
+if (googleForm) { // そのページにフォームがある時だけ実行する
+    googleForm.onsubmit = function() {
         submitted = true;
     };
+}
 
     // iframeが読み込まれた（＝送信処理が終わった）時の動き
-    document.getElementById('hidden_iframe').onload = function() {
-        if (submitted) {
-            // フォームを消して、完了メッセージを出す
-            document.querySelector('.contact-card').innerHTML = 
-                '<div style="text-align:center; padding:20px;">' +
-                '<h3>送信完了！</h3>' +
-                '<p>メッセージを受け取ったよ！ありがとう！</p>' +
-                '</div>';
-        }
-    };
+var iframe = document.getElementById('hidden_iframe');
+    if (iframe) {
+        iframe.onload = function() {
+            if (submitted) {
+                // 送信完了後のメッセージ表示
+                var card = document.querySelector('.contact-form-wrapper');
+                if (card) {
+                    card.style.height = "auto"; // 高さを自動調整
+                    card.innerHTML = 
+                        '<div style="text-align:center; padding:40px; background:white; border-radius:15px;">' +
+                        '<h3 style="color:var(--accent-pink);">送信完了！</h3>' +
+                        '<p>メッセージを受け取ったよ！　ありがとう！</p>' +
+                        '</div>';
+                }
+            }
+        };
+    }
+
+// --- メニュー開閉の制御 ---
+function toggleMenu(e) {
+    if (e) e.stopPropagation(); // イベントの連鎖を止める
+    
+    const menu = document.getElementById('nav-menu');
+    const isOpening = !menu.classList.contains('open');
+
+    if (isOpening) {
+        // メニューを開く
+        menu.classList.add('open');
+        // メニュー外クリック判定用の透明な幕（オーバーレイ）を作成
+        createOverlay();
+    } else {
+        // メニューを閉じる
+        closeMenu();
+    }
+}
+
+// --- メニューを閉じる処理 ---
+function closeMenu() {
+    const menu = document.getElementById('nav-menu');
+    menu.classList.remove('open');
+    
+    // オーバーレイがあれば消す
+    const overlay = document.getElementById('menu-overlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+// --- 透明な幕（オーバーレイ）を作る関数 ---
+function createOverlay() {
+    // すでに存在していれば作らない
+    if (document.getElementById('menu-overlay')) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'menu-overlay';
+    
+    // 画面全体を覆うスタイル（透明）
+    Object.assign(overlay.style, {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '100vw',
+        height: '100vh',
+        zIndex: '999', // ヘッダー(1000)より少し下に配置
+        background: 'rgba(0,0,0,0.2)' // 完全に透明（必要なら 0.1 くらいにして確認してください）
+    });
+
+    // この幕がクリックされたらメニューを閉じる
+    overlay.addEventListener('click', closeMenu);
+    
+    document.body.appendChild(overlay);
+}
+
+
+
+
+// --- 2. 答え合わせ機能 ---
+function toggleAnswer() {
+    const existing = document.getElementById('answer-modal');
+    if (existing) {
+        existing.remove();
+        return;
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'answer-modal';
+    
+    // 現在のモードの正解リストを作成
+    const currentConfig = config[currentMode];
+    let tableRows = "";
+    currentConfig.symbols.forEach((sym, idx) => {
+        const soundFile = shuffledSounds[currentMode][idx];
+	const originalIdx = currentConfig.sounds.indexOf(soundFile);
+        const name = currentConfig.displayNames[originalIdx];
+        
+        tableRows += `<tr><td>${sym}</td><td>${name}</td></tr>`;
+    });
+
+    modal.innerHTML = `
+        <div class="answer-content">
+            <h3 style="margin-top:0; text-align: center;">答え合わせ</h3>
+            <table>
+                <thead><tr><th>絵</th><th>音声</th></tr></thead>
+                <tbody>${tableRows}</tbody>
+            </table>
+            <button id="close-btn" class="btn" onclick="handleAnswer()">閉じる</button>
+        </div>
+    `;
+// オーバーレイをクリックしても閉じるように設定
+    modal.onclick = (e) => { if(e.target.id === 'answer-modal') toggleAnswer(); };
+    document.body.appendChild(modal);
+}
