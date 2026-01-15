@@ -8,17 +8,38 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-   <div style="height: 50px;"></div>
+<header class="site-header">
+    <a href="index.html" class="header-logo">
+        <img src="owner.png" alt="Home">
+    </a>
+
+    <div class="menu-container">
+        <button class="menu-toggle" onclick="toggleMenu(event)">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+        <nav id="nav-menu" class="nav-menu">
+            <ul>
+                <li><a href="index.html">遊ぶ</a></li>
+                <li><a href="contact.html">ご意見<br>お問い合わせ</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
 
     <h1>プライバシーポリシー</h1>
     
     <div class="policy-card">
-        <p>当サイトは、利用者の個人情報を取得することはありません。また、本アプリはブラウザ上で動作し、音声ファイルは一時的な再生にのみ利用されます。</p>
+	<h3>個人情報の利用目的</h3>
+        <p>当サイトでは、ご意見・お問い合わせの際、名前やメールアドレス等の個人情報を入力いただく場合がございます。取得した個人情報は、ご意見・お問い合わせに対してのご連絡をする場合に利用させていただくものであり、この目的以外では利用いたしません。</p><br>
+	<h3>アクセス解析ツールについて</h3>
+	<p>当サイトでは、Googleによるアクセス解析ツール「Googleアナリティクス」を利用しています。このGoogleアナリティクスはトラフィックデータの収集のためにCookieを使用しております。トラフィックデータは匿名で収集されており、個人を特定するものではありません。</p>
     </div>
 
    <div style="height: 50px;"></div>
 
-    <h1>免責事項</h1>
+    <h1 id="disclaimer">免責事項</h1>
     <div class="policy-card">
         <p>当サイトの利用により生じた不利益について、制作者は一切の責任を負いません。</p>
     </div>
@@ -35,12 +56,11 @@
         </div>
 	<br>
         <div class="footer-links">
-            <a href="index.html">ゲーム</a>
             <a href="privacy.html">プライバシーポリシー</a>
-	    <a href="privacy.html">免責事項</a>
-            <a href="contact.html">お問い合わせ・ご意見</a>
+	    <a href="privacy.html#disclaimer">免責事項</a>
+            <a href="contact.html">ご意見・お問い合わせ</a>
         </div>
-        <p>&copy; 2026 元気いっぱい！ボイススロット</p>
+        <p><small>&copy; 2026 元気いっぱい！ボイススロット</small></p>
     </footer>
 
     <script src="script.js"></script>
